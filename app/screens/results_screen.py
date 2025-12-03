@@ -1,23 +1,35 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
+from kivy.properties import StringProperty
+
+from score_calc import process_image
 
 
 class ResultsScreen(Screen):
+    selected_file = StringProperty("")
+
     def on_pre_enter(self):
         self.clear_widgets()
 
         layout = BoxLayout(orientation="vertical", padding=20, spacing=20)
 
-        # Пока фиксированный текст — позже добавим реальные очки
-        layout.add_widget(Label(text="Результаты обработки будут здесь"))
+        layout.add_widget(Label(text=f"Файл: {self.selected_file}"))
 
-        btn_back = Button(text="Назад в меню")
-        btn_back.bind(on_press=self.go_menu)
+        # Обрабатываем изображение
+        result = process_image(self.selected_file)
 
-        layout.add_widget(btn_back)
+        if not result["success"]:
+            layout.add_widget(Label(text=f"Ошибка: {result['error']}"))
+        else:
+            layout.add_widget(
+                Label(
+                    text=(
+                        "Обработано!\n"
+                        f"Ширина: {result['width']}\n"
+                        f"Высота: {result['height']}\n"
+                    )
+                )
+            )
+
         self.add_widget(layout)
-
-    def go_menu(self, *args):
-        self.manager.current = "menu"
