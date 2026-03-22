@@ -1,1 +1,6 @@
 routes.json
+assets/private/
+venv/
+__pycache__/
+*.pyc
+assets/route_mask.png
